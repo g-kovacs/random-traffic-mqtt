@@ -25,6 +25,9 @@ func (c Config) LogValue() slog.Value {
 		slog.Group("server",
 			slog.String("host", redacted.Server.Host),
 			slog.Int("port", redacted.Server.Port),
+			slog.String("topic", redacted.Server.Host),
+			slog.String("user", redacted.Server.Host),
+			slog.String("pass", redacted.Server.Host),
 		),
 		slog.Group("generation",
 			slog.Int("frequency", redacted.Generation.Frequency),
@@ -68,6 +71,10 @@ type Server struct {
 	Host string `json:"host" yaml:"host"`
 	// Port to connect to
 	Port int `json:"port" yaml:"port"`
+	// Topic to send the messages to
+	Topic string `json:"topic" yaml:"topic"`
+	User  string `json:"user" yaml:"user"`
+	Pass  string `json:"pass" yaml:"pass"`
 }
 
 // Some common distributions

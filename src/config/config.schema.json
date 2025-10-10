@@ -16,11 +16,26 @@
                     "type": "integer",
                     "default": 1883,
                     "description": "Port to connect to"
-                }
+                },
+		"topic": {
+		    "type": "string",
+		    "description": "Topic to send the messages to"
+		},
+		"user": {
+		    "type": "string",
+		    "description": "Username"
+		},
+		"pass": {
+		    "type": "string",
+		    "description": "Password"
+		},
             },
             "required": [
                 "host",
-                "port"
+                "port",
+		"topic",
+		"user",
+		"pass"
             ]
         },
         "generation": {

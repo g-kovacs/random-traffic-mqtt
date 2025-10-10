@@ -1,10 +1,13 @@
 server:
   host: "localhost"
   port: 1883
+  topic: "tst/msg"
+  user: "test"
+  pass: "test1234"
 generation:
-  frequency: 4
+  frequency: 10
   size:
     distribution: "normal"
-    parA: 160
-    parB: 0.2368
-loglevel: "Debug"
+    parA: 164
+    parB: 4.8368
+loglevel: "Warn"
