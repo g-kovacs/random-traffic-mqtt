@@ -1,0 +1,10 @@
+server:
+  host: "localhost"
+  port: 1883
+generation:
+  frequency: 4
+  size:
+    distribution: "normal"
+    parA: 160
+    parB: 0.2368
+loglevel: "Debug"

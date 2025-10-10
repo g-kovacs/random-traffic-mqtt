@@ -1,0 +1,88 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "ApplicationConfig",
+    "type": "object",
+    "properties": {
+        "server": {
+            "type": "object",
+            "description": "Server configuration",
+            "properties": {
+                "host": {
+                    "type": "string",
+                    "default": "localhost",
+                    "description": "Hostname or IP address of the remote server"
+                },
+                "port": {
+                    "type": "integer",
+                    "default": 1883,
+                    "description": "Port to connect to"
+                }
+            },
+            "required": [
+                "host",
+                "port"
+            ]
+        },
+        "generation": {
+            "type": "object",
+            "description": "Message generation parameters",
+            "properties": {
+                "frequency": {
+                    "type": "integer",
+                    "description": "Message generation frequency in Hz",
+                    "default": 5
+                },
+                "size": {
+                    "type": "object",
+                    "description": "Distribution of the generated message size",
+                    "properties": {
+                        "distribution": {
+                            "$ref": "#/$defs/Distribution"
+                        },
+                        "parA": {
+                            "type": "number",
+                            "description": "First parameter of the chosen distribution"
+                        },
+                        "parB": {
+                            "type": "number",
+                            "description": "Second parameter of the chosen distribution"
+                        }
+                    },
+                    "required": [
+                        "distribution",
+                        "parA"
+                    ]
+                }
+            },
+            "required": [
+                "frequency",
+                "size"
+            ]
+        },
+        "loglevel": {
+            "$ref": "#/$defs/LogLevel"
+        }
+    },
+    "$defs": {
+        "Distribution": {
+            "type": "string",
+            "description": "Some common distributions",
+            "enum": [
+                "normal",
+                "exponential"
+            ],
+            "default": "exponential"
+        },
+        "LogLevel": {
+            "type": "string",
+            "description": "Log level",
+            "enum": [
+                "Debug",
+                "Info",
+                "Warn",
+                "Error"
+            ],
+            "default": "Warn"
+        }
+    }
+}
