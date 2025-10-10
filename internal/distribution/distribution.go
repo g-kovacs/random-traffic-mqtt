@@ -5,14 +5,14 @@ import (
 )
 
 type Distribution interface {
-	next() int
+	Next() int
 }
 
 type Exponential struct {
 	Lambda float64
 }
 
-func (e Exponential) next() int {
+func (e Exponential) Next() int {
 	val := rand.ExpFloat64() / e.Lambda
 	return int(val)
 }
@@ -26,7 +26,7 @@ type Normal struct {
 	Sigma float64
 }
 
-func (n Normal) next() int {
+func (n Normal) Next() int {
 	val := rand.NormFloat64()*n.Sigma + n.Mu
 	return int(val)
 }

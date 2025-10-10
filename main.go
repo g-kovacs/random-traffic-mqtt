@@ -2,12 +2,15 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"os"
 
 	"gopkg.in/yaml.v3"
 
 	"log/slog"
 
+	"github.com/g-kovacs/random-traffic-mqtt/internal/distribution"
+	"github.com/g-kovacs/random-traffic-mqtt/src/client"
 	"github.com/g-kovacs/random-traffic-mqtt/src/config"
 )
 
@@ -54,4 +57,17 @@ func main() {
 	slog.SetDefault(slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
 		Level: getLogLevel(*cfg.Loglevel), AddSource: true})))
 	slog.Debug("config loaded", "config", *cfg)
+
+	var random distribution.Distribution
+	switch cfg.Generation.Size.Distribution {
+	case config.Exponential:
+		random = distribution.NewExponential(1 / cfg.Generation.Size.ParA)
+	case config.Normal:
+		random = distribution.NewNormal(cfg.Generation.Size.ParA, *cfg.Generation.Size.ParB)
+	default:
+		panic(fmt.Errorf("unknown distribution"))
+	}
+	c := client.Client{
+		Random: random}
+	c.Run(*cfg)
 }
