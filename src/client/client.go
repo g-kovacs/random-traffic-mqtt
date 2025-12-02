@@ -3,6 +3,7 @@ package client
 import (
 	"context"
 	"crypto/rand"
+	"encoding/json"
 	"fmt"
 	"log/slog"
 	"net/url"
@@ -20,6 +21,11 @@ import (
 
 type Client struct {
 	Random distribution.Distribution
+}
+
+type message struct {
+	Timestamp string `json:"timestamp"`
+	Payload   []byte `json:"payload"`
 }
 
 func (c Client) mqttConfig(cfg config.Config) autopaho.ClientConfig {
@@ -79,18 +85,23 @@ func (c Client) Run(cfg config.Config) {
 
 	ticker := time.NewTicker(time.Duration(1000/cfg.Generation.Frequency) * time.Millisecond)
 	defer ticker.Stop()
-
 	for {
 		select {
 		case <-ticker.C:
 			p, err := c.newMessage()
 			if err != nil {
 				slog.Error("error generating message", "reason", err.Error())
+				continue
+			}
+			msg, err := json.Marshal(message{Timestamp: time.Now().String(), Payload: p})
+			if err != nil {
+				slog.Error("error marshaling message to JSON", "reason", err.Error())
+				continue
 			}
 			if _, err = conn.Publish(ctx, &paho.Publish{
 				QoS:     0,
 				Topic:   cfg.Server.Topic,
-				Payload: p,
+				Payload: msg,
 			}); err != nil {
 				if ctx.Err() == nil {
 					panic(err)
