@@ -2,8 +2,9 @@ package config
 
 import (
 	"encoding/json"
-	"github.com/g-kovacs/random-traffic-mqtt/internal/pointer"
 	"log/slog"
+
+	"github.com/g-kovacs/random-traffic-mqtt/internal/pointer"
 )
 
 func UnmarshalConfig(data []byte) (Config, error) {
@@ -44,6 +45,7 @@ type Config struct {
 	// Message generation parameters
 	Generation *Generation `json:"generation,omitempty" yaml:"generation,omitempty"`
 	Loglevel   *Loglevel   `json:"loglevel,omitempty" yaml:"loglevel,omitempty"`
+	LogFile    *string     `json:"logfile,omitempty" yaml:"logfile,omitempty"`
 	// Server configuration
 	Server *Server `json:"server,omitempty" yaml:"server,omitempty"`
 }

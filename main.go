@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 	"os"
 
 	"gopkg.in/yaml.v3"
@@ -13,6 +14,20 @@ import (
 	"github.com/g-kovacs/random-traffic-mqtt/src/client"
 	"github.com/g-kovacs/random-traffic-mqtt/src/config"
 )
+
+func newFileLogger(path string) *slog.Logger {
+	f, err := os.OpenFile(path, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0o644)
+	if err != nil {
+		log.Fatalf("error opening log file: %v", err)
+	}
+
+	// Choose JSON or Text handler
+	handler := slog.NewJSONHandler(f, &slog.HandlerOptions{
+		Level: slog.LevelInfo,
+	})
+
+	return slog.New(handler)
+}
 
 func getLogLevel(level config.Loglevel) slog.Level {
 	var lvl slog.Level
@@ -58,6 +73,13 @@ func main() {
 		Level: getLogLevel(*cfg.Loglevel), AddSource: true})))
 	slog.Debug("config loaded", "config", *cfg)
 
+	var logger *slog.Logger
+	if cfg.LogFile != nil && *cfg.LogFile != "" {
+		logger = newFileLogger(*cfg.LogFile)
+	} else {
+		logger = newFileLogger("msg.log")
+	}
+
 	var random distribution.Distribution
 	switch cfg.Generation.Size.Distribution {
 	case config.Exponential:
@@ -69,5 +91,5 @@ func main() {
 	}
 	c := client.Client{
 		Random: random}
-	c.Run(*cfg)
+	c.Run(*cfg, logger)
 }

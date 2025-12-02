@@ -26,6 +26,7 @@ type Client struct {
 type message struct {
 	Timestamp string `json:"timestamp"`
 	Payload   []byte `json:"payload"`
+	Id        string `json:"id"`
 }
 
 func (c Client) mqttConfig(cfg config.Config) autopaho.ClientConfig {
@@ -68,7 +69,7 @@ func (c Client) newMessage() ([]byte, error) {
 	return b, nil
 }
 
-func (c Client) Run(cfg config.Config) {
+func (c Client) Run(cfg config.Config, msgLogger *slog.Logger) {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 
@@ -93,7 +94,9 @@ func (c Client) Run(cfg config.Config) {
 				slog.Error("error generating message", "reason", err.Error())
 				continue
 			}
-			msg, err := json.Marshal(message{Timestamp: time.Now().String(), Payload: p})
+			id := uuid.NewString()
+			time := time.Now().UTC().Format(time.RFC3339Nano)
+			msg, err := json.Marshal(message{Timestamp: time, Payload: p, Id: id})
 			if err != nil {
 				slog.Error("error marshaling message to JSON", "reason", err.Error())
 				continue
@@ -107,7 +110,7 @@ func (c Client) Run(cfg config.Config) {
 					panic(err)
 				}
 			}
-			slog.Debug("sent message", "size", len(p), "message", p)
+			msgLogger.Info("sent message", "timestamp", time, "id", id, "payload_size", len(p))
 			continue
 		case <-ctx.Done():
 		}
