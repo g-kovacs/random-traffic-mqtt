@@ -1,2 +1,2 @@
 # random-traffic-mqtt
-Client generateing random MQTT trafic.
+Client generating random MQTT trafic.
