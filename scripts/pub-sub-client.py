@@ -30,18 +30,22 @@ args = parser.parse_args()
 # ---- Loggers ----
 tx_logger = logging.getLogger("tx")
 rx_logger = logging.getLogger("rx")
+stats_logger = logging.getLogger("stats")
 
 tx_handler = logging.FileHandler(f"{args.log_prefix}_tx.jsonl")
 rx_handler = logging.FileHandler(f"{args.log_prefix}_rx.jsonl")
+stats_handler = logging.FileHandler(f"{args.log_prefix}_stats.jsonl")
 
-for h in (tx_handler, rx_handler):
+for h in (tx_handler, rx_handler, stats_handler):
     h.setFormatter(logging.Formatter("%(message)s"))
 
 tx_logger.addHandler(tx_handler)
 rx_logger.addHandler(rx_handler)
+stats_logger.addHandler(stats_handler)
 
 tx_logger.setLevel(logging.INFO)
 rx_logger.setLevel(logging.INFO)
+stats_logger.setLevel(logging.INFO)
 
 # ---- Stats ----
 latencies = []
@@ -157,6 +161,7 @@ def print_stats():
         }
 
         print(json.dumps(stats), flush=True)
+        stats_logger.info(json.dumps(stats))
 
 
 # ---- MQTT client ----
