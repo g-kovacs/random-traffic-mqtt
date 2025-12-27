@@ -149,12 +149,14 @@ def print_stats():
             payload_bytes = 0
             message_count = 0
 
-        print(
-            f"[{now_iso()}] "
-            f"Avg Latency: {avg_latency:.3f} ms | "
-            f"Throughput: {throughput_mbps:.3f} Mbps | "
-            f"Messages: {count}"
-        )
+        stats = {
+            "time": now_iso(),
+            "avg_latency_ms": round(avg_latency, 3),
+            "throughput_mbps": round(throughput_mbps, 3),
+            "messages": count,
+        }
+
+        print(json.dumps(stats), flush=True)
 
 
 # ---- MQTT client ----
