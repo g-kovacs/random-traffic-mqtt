@@ -10,6 +10,7 @@ import time
 import uuid
 import random
 import base64
+import socket
 import os
 
 # ---- Command line args ----
@@ -57,9 +58,13 @@ client_id = f"mqtt-test-{uuid.uuid4()}"
 
 
 # ---- MQTT callbacks ----
-def on_connect(client, userdata, flags, rc):
+def on_connect(client, userdata, flags, rc, properties):
     print(f"Connected as {client_id}, rc={rc}")
-    client.subscribe(args.topic)
+    # Access the internal socket and set TCP_NODELAY
+    if client._sock:
+        client._sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+        print("TCP_NODELAY applied")
+    client.subscribe(args.topic, qos=0)
 
 
 def on_message(client, userdata, msg):
@@ -165,7 +170,7 @@ def print_stats():
 
 
 # ---- MQTT client ----
-client = mqtt.Client(client_id=client_id)
+client = mqtt.Client(client_id=client_id, protocol=mqtt.MQTTv5)
 if args.username and args.password:
     client.username_pw_set(args.username, args.password)
 
